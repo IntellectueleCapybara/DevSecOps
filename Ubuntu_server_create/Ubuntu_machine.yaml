@@ -1,0 +1,94 @@
+###
+### code voor het aanmaken van de Vm die gebruikt kan worden om alles op te deployen
+###
+
+
+- name: het aanmaken van de VMs
+  hosts: localhost
+  gather_facts: no
+  become: yes
+
+  ###
+  ### vars gebruiken zodat dit script ook scalable is
+  ###
+
+  vars: #verander dit als je andere IPs hebt en andere nodenamen
+    pm03: 172.16.39.72
+    node3: geenboom4
+
+
+  ###
+  ### Wachtwoorden prompten zodat hij niet hardcoded in het script staat
+  ###
+
+  vars_prompt:
+    - name: "api_password"
+      prompt: "Enter the Proxmox API password"
+      private: yes
+
+  tasks:
+    - name: Updaten van packets...
+      apt:
+        update_cache: yes
+
+    - name: Install Python 3 and pip
+      become: yes
+      become_user: root
+      command: apt install -y python3 python3-pip
+
+    - name: Installeer proxmoxer en requests met pip
+      ansible.builtin.pip:
+        name:
+          - proxmoxer
+          - requests
+        executable: pip3
+
+    - name: installeren van community.general collectie
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install community.general
+
+    ##
+    ## EspoCRM VMs aanmaken met disk 50G/2 proc/2GB mem ne statische IP toekennen
+    ##
+    ###
+    ### PM01
+    ###
+    - name: Create VMs on pm03
+      proxmox_kvm:
+        api_user: root@pam
+        api_password: "{{ api_password }}"
+        api_host: "{{ pm03 }}"
+        node: "{{ node3 }}"
+        name: "{{ item.hostname }}"
+        clone: "{{ item.template }}"
+        newid: "{{ item.vmid }}"
+        memory: 2048
+        cores: 2
+        net: '{"net0":"virtio,bridge=vmbr0"}'
+        onboot: yes
+        ostype: l26 # Ubuntu 20.04 LTS
+        ipconfig: '{"net0":"ip={{ item.ip }}/16,gw=172.16.0.1"}'
+        agent: '1'
+        timeout: 300
+      loop:
+        - { template: "ubuntu-2004-cloudinit-template3", vmid: 6969, hostname: "DevSecOps", ip: "172.16.39.123" }
+
+###
+### ips toevoegen aan de VMs
+###
+
+- name: Voeg shared_storage toe aan Proxmox03
+  hosts:
+    - pm03
+  tasks:
+    - name: toevoegen....
+      shell: |
+        qm set 6969 --virtio0 shared_storage:50,format=qcow2
+        qm set 6969 --ipconfig0 ip=172.16.39.123/16,gw=172.16.0.1
+        qm set 6969 --sshkey /root/.ssh/id_rsa.pub
+
+- name: VM starten op Proxmox 3
+  hosts: pm03
+  tasks:
+    - name: Start VM on pm03
+      shell: "qm status 6969 | grep -q 'status: running' || qm start 6969"

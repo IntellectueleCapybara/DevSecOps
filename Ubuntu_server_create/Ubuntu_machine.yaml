@@ -106,9 +106,12 @@
       with_items:
         - "DevSecOps"
 
+###
+### delay toevoegen
+###
+
 - name: de VDA opslag gebruiken
-  hosts:
-    - DevSecOps
+  hosts: DevSecOps
   become: yes
   tasks:
     - name: Maak het mount point

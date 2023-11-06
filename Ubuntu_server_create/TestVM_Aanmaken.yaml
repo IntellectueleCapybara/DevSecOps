@@ -74,6 +74,11 @@
 ###
 ### monitoring toevoegen
 ###
+- name: Voeg shared_storage toe aan Proxmox03
+  hosts: localhost
+  tasks:
+    - name: ssh key refreshen
+      ansible.builtin.shell: ssh-keygen -f "/root/.ssh/known_hosts" -R "172.16.39.124"
 
 - name: monitoring toevoegen aan de testserver
   hosts: DevSecOpsTest

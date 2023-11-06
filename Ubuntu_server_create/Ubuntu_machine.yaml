@@ -91,7 +91,7 @@
   hosts: pm03
   tasks:
     - name: Start VM on pm03
-      shell: "qm status 6970 | grep -q 'status: running' || qm start 6970"
+      shell: "qm status 6969 | grep -q 'status: running' || qm start 6969"
 
     - name: wachten op volledige boot zodat wij de cli kunnen gebruiken(80 seconden...)
       pause:
@@ -102,7 +102,7 @@
 ###
 
 - name: monitoring toevoegen aan de testserver
-  hosts: DevSecOpsTest
+  hosts: DevSecOps
   tasks:
 
     - name: monitor server toevoegen(netdata)

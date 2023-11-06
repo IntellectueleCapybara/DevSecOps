@@ -1,14 +1,12 @@
 stages:
+  - setup
   - build
   - test
 
-include:
-  - template: Code-Quality.gitlab-ci.yml
-
-code_quality:
-  services:
-  tags:
-    - cq-sans-dind     # Set this job to only run on our new specialized runner
+setup_job:
+  stage: setup
+  script:
+    - ssh root@172.16.39.69 "ansible-playbook -i hosts ubuntu_test.yaml --ssh-common-args='-o StrictHostKeyChecking=no'"
 
 build_job:
   stage: build
@@ -18,4 +16,3 @@ build_job:
     - mkdir /etc/pihole
     - wget -O /etc/pihole/setupVars.conf https://pastebin.com/raw/YBpWALGg
     - curl -sSL https://install.pi-hole.net | PIHOLE_SKIP_OS_CHECK=true bash -s -- --unattended
-

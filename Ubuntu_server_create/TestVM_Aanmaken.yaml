@@ -38,7 +38,7 @@
         agent: '1'
         timeout: 300
       loop:
-        - { template: "ubuntu-2004-cloudinit-template3", vmid: 6970, hostname: "DevSecOps", ip: "172.16.39.124" }
+        - { template: "ubuntu-2004-cloudinit-template3", vmid: 6970, hostname: "DevSecOpsTest", ip: "172.16.39.124" }
 
 ###
 ### ips toevoegen aan de VMs
@@ -59,3 +59,13 @@
   tasks:
     - name: Start VM on pm03
       shell: "qm status 6970 | grep -q 'status: running' || qm start 6970"
+
+###
+### monitoring toevoegen
+###
+
+- name: monitoring toevoegen aan de testserver
+  hosts: DevSecOpsTest
+  tasks:
+    - name: monitor server toevoegen(netdata)
+      ansible.builtin.shell: wget -O /tmp/netdata-kickstart.sh https://my-netdata.io/kickstart.sh && sh /tmp/netdata-kickstart.sh --nightly-channel --claim-token ZrQ5HQusgHQrZ5ZFxOIC2qgDj3w0bmLNyJMipriRpEJ6ryTNmu66ENNTUQHHXaLf0UU_wBv7T6QaHXJ1FpA7iLRM67wZXCrn_Tz7hsZhRMvByX027oFzczqEju3-Ew2bOzIOxxM --claim-rooms 25a63be6-ad65-4774-9334-3e6790f92a9f --claim-url https://app.netdata.cloud

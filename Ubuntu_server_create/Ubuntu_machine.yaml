@@ -120,6 +120,11 @@
       file:
         path: /mnt/vda
         state: directory
+    ###
+    ### verander het bestandtype van vda naar ext4
+    ###
+    - name: verander het bestandstype van vda naar ext4
+      shell: mkfs.ext4 /dev/vda
 
     - name: Voeg de harde schijf toe aan /etc/fstab
       lineinfile:

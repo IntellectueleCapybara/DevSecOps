@@ -92,3 +92,40 @@
   tasks:
     - name: Start VM on pm03
       shell: "qm status 6969 | grep -q 'status: running' || qm start 6969"
+
+- name: wachten op boot
+  hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Wait for VMs to boot
+      local_action:
+        module: wait_for_connection
+        delay: 5
+        timeout: 300
+      with_items:
+        - "DevSecOps"
+
+###
+### delay toevoegen
+###
+
+- name: de VDA opslag gebruiken
+  hosts: DevSecOps
+  become: yes
+  tasks:
+    - name: Maak het mount point
+      file:
+        path: /mnt/vda
+        state: directory
+
+    - name: Voeg de harde schijf toe aan /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: '/dev/vda /mnt/vda ext4 defaults 0 0'
+        state: present
+
+    - name: Mount alle bestandssystemen waarvan de fstab regels gelezen zijn
+      command:
+        cmd: mount -a
+

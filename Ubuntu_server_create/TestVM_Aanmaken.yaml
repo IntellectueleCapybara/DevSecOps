@@ -2,10 +2,17 @@
   hosts:
     - pm03
   tasks:
-    - name: toevoegen....
+    - name: Controleer of VM bestaat
+      command: qm status 6970
+      register: vm_status
+      ignore_errors: true
+
+    - name: Stop en vernietig VM
       shell: |
         qm stop 6970
         qm destroy 6970
+      when: vm_status.rc == 0
+
 
 
 - name: maak TestVM
@@ -67,5 +74,9 @@
 - name: monitoring toevoegen aan de testserver
   hosts: DevSecOpsTest
   tasks:
+    - name: sleep
+      pause:
+        seconds: 70
+
     - name: monitor server toevoegen(netdata)
       ansible.builtin.shell: wget -O /tmp/netdata-kickstart.sh https://my-netdata.io/kickstart.sh && sh /tmp/netdata-kickstart.sh --nightly-channel --claim-token ZrQ5HQusgHQrZ5ZFxOIC2qgDj3w0bmLNyJMipriRpEJ6ryTNmu66ENNTUQHHXaLf0UU_wBv7T6QaHXJ1FpA7iLRM67wZXCrn_Tz7hsZhRMvByX027oFzczqEju3-Ew2bOzIOxxM --claim-rooms 25a63be6-ad65-4774-9334-3e6790f92a9f --claim-url https://app.netdata.cloud

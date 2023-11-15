@@ -14,7 +14,8 @@ code_quality:
 setup_job:
   stage: setup
   script:
-    - ssh root@172.16.39.69 "ansible-playbook -i hosts ubuntu_test.yaml --ssh-common-args='-o StrictHostKeyChecking=no'"
+    - ssh root@172.16.39.69 "ansible-playbook -i /home/geenboom1/ansible_wordpress_project/Devsecops/hosts /home/geenboom1/ansible_wordpress_project/Devsecops/ubuntu_test.yaml --ssh-common-args='-o StrictHostKeyChecking=no'"
+    #ssh root@172.16.39.69 "ansible-playbook -i /volledig/pad/naar/hosts /volledig/pad/naar/ubuntu_test.yaml --ssh-common-args='-o StrictHostKeyChecking=no'"
 
 build_job:
   stage: build

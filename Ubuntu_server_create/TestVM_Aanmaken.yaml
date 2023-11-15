@@ -86,3 +86,32 @@
 
     - name: monitor server toevoegen(netdata)
       ansible.builtin.shell: wget -O /tmp/netdata-kickstart.sh https://my-netdata.io/kickstart.sh && sh /tmp/netdata-kickstart.sh --nightly-channel --claim-token ZrQ5HQusgHQrZ5ZFxOIC2qgDj3w0bmLNyJMipriRpEJ6ryTNmu66ENNTUQHHXaLf0UU_wBv7T6QaHXJ1FpA7iLRM67wZXCrn_Tz7hsZhRMvByX027oFzczqEju3-Ew2bOzIOxxM --claim-rooms 25a63be6-ad65-4774-9334-3e6790f92a9f --claim-url https://app.netdata.cloud
+
+###
+### shared storage toevoegen
+###
+
+- name: de VDA opslag gebruiken
+  hosts: DevSecOps
+  become: yes
+  tasks:
+    - name: Maak het mount point
+      file:
+        path: /mnt/vda
+        state: directory
+    ###
+    ### verander het bestandtype van vda naar ext4
+    ###
+    - name: verander het bestandstype van vda naar ext4
+      shell: mkfs.ext4 /dev/vda
+
+    - name: Voeg de harde schijf toe aan /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: '/dev/vda /mnt/vda ext4 defaults 0 0'
+        state: present
+
+    - name: Mount alle bestandssystemen waarvan de fstab regels gelezen zijn
+      command:
+        cmd: mount -a
+

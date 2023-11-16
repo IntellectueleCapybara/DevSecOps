@@ -7,7 +7,7 @@
       register: vm_status
       ignore_errors: true
 
-    - name: Stop en vernietig VM
+    - name: Stop en vernietig oude VM
       shell: |
         qm stop 6970
         qm destroy 6970
@@ -51,7 +51,7 @@
 ### ips toevoegen aan de VMs
 ###
 
-- name: Voeg shared_storage toe aan Proxmox03
+- name: Voeg shared_storage toe aan Proxmox03 test VM
   hosts:
     - pm03
   tasks:
@@ -74,7 +74,7 @@
 ###
 ### monitoring toevoegen
 ###
-- name: Voeg shared_storage toe aan Proxmox03
+- name: ssh key refreshen en monitoring toevoegen
   hosts: localhost
   tasks:
     - name: ssh key refreshen

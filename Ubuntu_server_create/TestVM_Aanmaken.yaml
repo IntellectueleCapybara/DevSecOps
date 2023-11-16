@@ -92,7 +92,7 @@
 ###
 
 - name: de VDA opslag gebruiken
-  hosts: DevSecOps
+  hosts: DevSecOpsTest
   become: yes
   tasks:
     - name: Maak het mount point
